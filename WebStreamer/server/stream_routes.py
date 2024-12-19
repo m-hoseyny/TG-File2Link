@@ -7,6 +7,7 @@ import math
 import logging
 import secrets
 import mimetypes
+import pathlib
 from aiohttp import web
 from aiohttp.http_exceptions import BadStatusLine
 from WebStreamer.bot import multi_clients, work_loads
@@ -20,21 +21,39 @@ routes = web.RouteTableDef()
 
 @routes.get("/", allow_head=True)
 async def root_route_handler(_):
-    return web.json_response(
-        {
-            "server_status": "running",
-            "uptime": utils.get_readable_time(time.time() - StartTime),
-            "telegram_bot": "@" + StreamBot.username,
-            "connected_bots": len(multi_clients),
-            "loads": dict(
-                ("bot" + str(c + 1), l)
-                for c, (_, l) in enumerate(
-                    sorted(work_loads.items(), key=lambda x: x[1], reverse=True)
-                )
-            ),
-            "version": f"v{__version__}",
-        }
-    )
+    try:
+        # Get the project root directory (two levels up from this file)
+        project_root = pathlib.Path(__file__).parent.parent.parent
+        index_path = project_root / 'index.html'
+        
+        if index_path.exists():
+            with open(index_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            return web.Response(
+                text=content,
+                content_type='text/html',
+                headers={'Cache-Control': 'public, max-age=3600'}
+            )
+        else:
+            # Fallback to JSON response if index.html doesn't exist
+            return web.json_response(
+                {
+                    "server_status": "running",
+                    "uptime": utils.get_readable_time(time.time() - StartTime),
+                    "telegram_bot": "@" + StreamBot.username,
+                    "connected_bots": len(multi_clients),
+                    "loads": dict(
+                        ("bot" + str(c + 1), l)
+                        for c, (_, l) in enumerate(
+                            sorted(work_loads.items(), key=lambda x: x[1], reverse=True)
+                        )
+                    ),
+                    "version": f"v{__version__}",
+                }
+            )
+    except Exception as e:
+        logger.error(f"Error serving index.html: {e}")
+        return web.Response(text="Internal Server Error", status=500)
 
 
 @routes.get(r"/{path:\S+}", allow_head=True)
