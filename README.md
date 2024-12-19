@@ -1,8 +1,6 @@
 <hr>
 
-> [!WARNING]
-> This project is being rewritten to [golang](https://github.com/EverythingSuckz/TG-FileStreamBot/tree/golang).
-<hr>
+
 <h1 align="center">Telegram File Stream Bot</h1>
 <p align="center">
   <a href="https://github.com/EverythingSuckz/TG-FileStreamBot">
@@ -10,8 +8,10 @@
   </a>
   <p align="center">
     A Telegram bot to <b>generate direct link</b> for your Telegram files.
+    <br>
+    Channel lock ids and landing page has been added.
     <br />
-    <a href="https://telegram.dog/TG_FileStreamBot"><strong><s>Demo Bot »</s></strong></a>
+    <a href="https://telegram.dog/GemFile2LinkBot"><strong>Demo Bot »</strong></a>
     <br />
     <a href="https://github.com/EverythingSuckz/TG-FileStreamBot/issues">Report a Bug</a>
     |
@@ -63,10 +63,11 @@
 ### Original Repository
 
 The main working part was taken from [Megatron](https://github.com/eyaadh/megadlbot_oss) and thanks to [eyaadh](https://github.com/eyaadh) for his awesome project.
+Also [m-hoseyny](https://github.com/m-hoseyny) improved the code a bit.
 
 ## How to make your own
 
-Either you could locally host or deploy on ~~[Heroku](https://heroku.com)~~ Free tier is dead.
+Either you could locally host. The nginx config also added to the [NGINX_SETUP.md](NGINX_SETUP.md)
 
 ### Host it on VPS or Locally
 
@@ -110,6 +111,8 @@ stream-bot
 
 your `PORT` variable has to be consistent with the container's exposed port since it's used for URL generation. so remember if you changed the `PORT` variable your docker run command changes too. (example: `PORT=9000` -> `-p 9000:9000`)
 
+
+
 if you need to change the variables in `.env` file after your bot was already started, all you need to do is restart the container for the bot settings to get updated:
 ```sh
 docker restart fsb
@@ -125,7 +128,10 @@ Afterwards, clone the repository
 git clone https://github.com/EverythingSuckz/TG-FileStreamBot
 cd TG-FileStreamBot
 ```
-No need to create .env file, just edit the variables in the docker-compose.yml
+*No need to create .env file, just edit the variables in the docker-compose.yml*
+```sh
+nano .env
+```
 
 Now run the compose file
 ```sh
@@ -149,6 +155,9 @@ PORT=8080
 FQDN=yourserverip
 HAS_SSL=False
 ```
+
+### Set up the nginx
+Use this [NGINX_SETUP.md](NGINX_SETUP.md) file to setup nginx as a reverse proxy for the bot. You can use SSL if you want. And also rate limit for the users by Nginx.
 
 ### Mandatory Vars
 Before running the bot, you will need to set up the following mandatory variables:
@@ -196,6 +205,8 @@ In addition to the mandatory variables, you can also set the following optional 
 - `PING_INTERVAL` : The time in ms you want the servers to be pinged each time to avoid sleeping (If you're on some PaaS). Defaults to `1200` or 20 minutes.
 
 - `USE_SESSION_FILE` : Use session files for client(s) rather than storing the pyrogram sqlite database in the memory
+
+- `CHANNEL_IDS` : A list of channel IDs to which the user must join to use the bot.
 
 ### For making use of Multi-Client support
 
@@ -247,13 +258,6 @@ sed -i 's/your_bot_username/FileToLinkBot/g' index.html
 
 Feel free to contribute to this project if you have any further ideas
 
-## Contact me
-
-[![Telegram Channel](https://img.shields.io/static/v1?label=Join&message=Telegram%20Channel&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/wrench_labs)
-[![Telegram Group](https://img.shields.io/static/v1?label=Join&message=Telegram%20Group&color=blueviolet&style=for-the-badge&logo=telegram&logoColor=violet)](https://xn--r1a.click/AlteredVoid)
-
-You can contact either via my [Telegram Group](https://xn--r1a.click/AlteredVoid) ~~or you can PM me on [@EverythingSuckz](https://xn--r1a.click/EverythingSuckz)~~
-
 
 ## Credits
 
@@ -263,9 +267,11 @@ You can contact either via my [Telegram Group](https://xn--r1a.click/AlteredVoid
 - [Dan Tès](https://telegram.dog/haskell) for his [Pyrogram Library](https://github.com/pyrogram/pyrogram)
 - [TheHamkerCat](https://github.com/TheHamkerCat)
 
+- [m-hoseyny](https://github.com/m-hoseyny) for his [TG-FileStreamBot](https://github.com/m-hoseyny/TG-FileStreamBot)
+
 ## Copyright
 
-Copyright (C) 2023 [EverythingSuckz](https://github.com/EverythingSuckz) under [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html).
+Copyright (C) 2023 [EverythingSuckz](https://github.com/EverythingSuckz) and [m-hoseyny](https://github.com/m-hoseyny) under [GNU Affero General Public License](https://www.gnu.org/licenses/agpl-3.0.en.html).
 
 TG-FileStreamBot is Free Software: You can use, study share and improve it at your
 will. Specifically you can redistribute and/or modify it under the terms of the
